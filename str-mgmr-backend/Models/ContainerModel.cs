@@ -91,6 +91,7 @@ namespace storage.mgr.backend.Models
             {
                 return true;
             }
+            if (_New._Length > _Last._Length || _New._Width > _Last._Width) return false;
             return false;
         }
         /// <summary>

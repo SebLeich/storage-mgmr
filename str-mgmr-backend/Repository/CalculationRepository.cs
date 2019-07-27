@@ -18,13 +18,18 @@ namespace storagemanager.backend.Repositories
             {
                 return null;
             }
-            return ExecuteAlgorithm(_Input, new SuperFlo());
+            switch (_Input._Algorithm)
+            {
+                case Algorithm.AllInOneRow:
+                    return new AllInOneRow(true).calculate(_Input);
+                case Algorithm.StartLeftBottom:
+                    return new StartLeftBottom().calculate(_Input);
+                case Algorithm.SuperFlo:
+                    return new SuperFlo().calculate(_Input);
+            }
+            return null;
         }
 
-        public SolutionModel ExecuteAlgorithm(DataInput _Data, GenericAlgorithm _Alg)
-        {
-            return _Alg.calculate(_Data);
-        }
         public List<CalculationOutput> OptimizeDimension(double _Max, List<CalculationInput> _Entities)
         {
             List<CalculationOutput> _Output = new List<CalculationOutput>();

@@ -51,13 +51,27 @@ namespace storage.mgr.backend.Models
         /// </summary>
         public bool _Rotate { get; set; } = false;
         /// <summary>
+        /// is the good rotated
+        /// </summary>
+        public bool _IsRotated { get; set; } = false;
+        /// <summary>
+        /// the goods sequence number of order
+        /// </summary>
+        public int _SequenceNr { get; set; } = 0;
+        /// <summary>
         /// the calculated right position of the good
         /// </summary>
         public double _R
         {
             get
             {
-                return _X + _Width;
+                if (_IsRotated)
+                {
+                    return _X + _Length;
+                } else
+                {
+                    return _X + _Width;
+                }
             }
         }
         /// <summary>
@@ -68,6 +82,22 @@ namespace storage.mgr.backend.Models
             get
             {
                 return _Y + _Height;
+            }
+        }
+        /// <summary>
+        /// the method returns the front position of the good
+        /// </summary>
+        public double _F
+        {
+            get
+            {
+                if (_IsRotated)
+                {
+                    return _Z + _Width;
+                } else
+                {
+                    return _Z + _Length;
+                }
             }
         }
     }

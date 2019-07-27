@@ -20,6 +20,11 @@ namespace storage.mgr.backend.Algorithm
 
         abstract public SolutionModel calculate(DataInput _Input);
 
+        /// <summary>
+        /// the method analysis the datasets to extract all groups and set a random color to them
+        /// </summary>
+        /// <param name="_Orders"></param>
+        /// <returns></returns>
         public List<GroupModel> AnalyzeGroups(List<OrderModel> _Orders)
         {
             List<GroupModel> _Output = new List<GroupModel>();
@@ -36,5 +41,12 @@ namespace storage.mgr.backend.Algorithm
             }
             return _Output;
         }
+    }
+    /// <summary>
+    /// the enumeration contains all available algorithms
+    /// </summary>
+    public enum Algorithm
+    {
+        AllInOneRow, StartLeftBottom, SuperFlo
     }
 }

@@ -1,4 +1,5 @@
-﻿using storage.mgr.backend.Models;
+﻿using storage.mgr.backend.Algorithm;
+using storage.mgr.backend.Models;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -29,6 +30,10 @@ namespace storagemanager.backend.Models
         /// contains all orders in the container
         /// </summary>
         public List<OrderModel> _Orders { get; set; }
+        /// <summary>
+        /// the algorithm selected for calculation
+        /// </summary>
+        public Algorithm _Algorithm { get; set; } = Algorithm.SuperFlo;
 
         /// <summary>
         /// the method checks whether the user's input is in a valid format or not

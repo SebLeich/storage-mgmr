@@ -25,17 +25,21 @@ namespace storage.mgr.backend.Models
         /// <summary>
         /// the used algorithm for the calculation
         /// </summary>
-        public GenericAlgorithm _Algorithm { get; set; }
+        public string _Algorithm { get; set; }
         /// <summary>
         /// the list of empty places
         /// </summary>
         public List<Position> _Empty { get; set; }
-
-        public List<Step> _Steps { get; set; }
-
+        /// <summary>
+        /// the list contains all done steps
+        /// </summary>
+        public List<SequenceStep> _Steps { get; set; }
+        /// <summary>
+        /// the constructor creates a new solution model
+        /// </summary>
         public SolutionModel()
         {
-            _Steps = new List<Step>();
+            _Steps = new List<SequenceStep>();
         }
     }
 }

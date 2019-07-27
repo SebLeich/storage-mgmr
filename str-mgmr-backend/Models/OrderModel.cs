@@ -46,6 +46,16 @@ namespace storage.mgr.backend.Models
         /// the id of the group
         /// </summary>
         public int _Group { get; set; }
+        /// <summary>
+        /// the method returns the area of the order
+        /// </summary>
+        public int area
+        {
+            get
+            {
+                return _Width * _Length;
+            }
+        }
 
         /// <summary>
         /// the method returns the biggest possible width of the good

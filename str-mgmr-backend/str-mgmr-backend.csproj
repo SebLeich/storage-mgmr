@@ -182,6 +182,8 @@
     <Compile Include="Global.asax.cs">
       <DependentUpon>Global.asax</DependentUpon>
     </Compile>
+    <Compile Include="Models\Endpoint.cs" />
+    <Compile Include="Models\EndpointType.cs" />
     <Compile Include="Models\Position.cs" />
     <Compile Include="Models\CalculationInput.cs" />
     <Compile Include="Models\CalculationOutput.cs" />
@@ -192,7 +194,9 @@
     <Compile Include="Models\GroupModel.cs" />
     <Compile Include="Models\OrderModel.cs" />
     <Compile Include="Models\Room.cs" />
+    <Compile Include="Models\SequenceStep.cs" />
     <Compile Include="Models\SolutionModel.cs" />
+    <Compile Include="Models\VirtualPosition.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Controllers\UploadController.cs" />
     <Compile Include="Repository\CalculationRepository.cs" />

@@ -7,10 +7,19 @@ using System.Threading.Tasks;
 
 namespace storage.mgr.backend.Algorithm
 {
+    /// <summary>
+    /// the algorihm s
+    /// </summary>
     public class AllInOneRow : GenericAlgorithm
     {
-        public bool _StackSame { get; set; } = false;
-
+        /// <summary>
+        /// the flag stores the stack flag
+        /// </summary>
+        public bool _StackSame { get; set; } = true;
+        /// <summary>
+        /// the constructor creates a new instance of the algorihm
+        /// </summary>
+        /// <param name="_StackSame">enable stackable</param>
         public AllInOneRow(bool _StackSame)
         {
             _First = ContainerPositionAxis.Y;
@@ -18,6 +27,11 @@ namespace storage.mgr.backend.Algorithm
             _Third = ContainerPositionAxis.X;
             this._StackSame = _StackSame;
         }
+        /// <summary>
+        /// the method calculates the solution for the given data input
+        /// </summary>
+        /// <param name="_Input">user's input</param>
+        /// <returns>solution</returns>
         public override SolutionModel calculate(DataInput _Input)
         {
             SolutionModel _Model = new SolutionModel();
@@ -27,7 +41,7 @@ namespace storage.mgr.backend.Algorithm
                 _Width = _Input._ContainerWidth
             };
             _Model._Container = _Container;
-            _Model._Algorithm = this;
+            _Model._Algorithm = "AllInOneRow";
             _Model._Groups = AnalyzeGroups(_Input._Orders);
             foreach (GroupModel _Group in _Model._Groups)
             {

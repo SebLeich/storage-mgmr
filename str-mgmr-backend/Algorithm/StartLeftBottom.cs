@@ -25,7 +25,7 @@ namespace storage.mgr.backend.Algorithm
                 _Width = _Input._ContainerWidth
             };
             _Model._Container = _Container;
-            _Model._Algorithm = this;
+            _Model._Algorithm = "StartLeftBottom";
             _Model._Groups = AnalyzeGroups(_Input._Orders);
             foreach (GroupModel _Group in _Model._Groups)
             {
