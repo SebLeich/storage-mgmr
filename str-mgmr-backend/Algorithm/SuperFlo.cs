@@ -38,6 +38,7 @@ namespace storage.mgr.backend.Algorithm
         public override SolutionModel calculate(DataInput _Input)
         {
             SolutionModel _Model = new SolutionModel();
+            _Model._ProcedureCall = DateTime.Now;
             ContainerModel _Container = new ContainerModel()
             {
                 _Height = _Input._ContainerHeight,
@@ -66,6 +67,7 @@ namespace storage.mgr.backend.Algorithm
             _Model._Container._Goods = _R._Goods;
             _Model._Container._Length = _R.Length;
             _Model._Steps = _R._Steps;
+            _Model._ProcedureEnd = DateTime.Now;
             return _Model;
         }
     }

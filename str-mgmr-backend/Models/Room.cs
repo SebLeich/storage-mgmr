@@ -28,10 +28,22 @@ namespace str_mgmr_backend.Models
             criteria = new Dictionary<string, double>();
         }
     }
+    /// <summary>
+    /// the class represents a helper class for the sweep algorithm
+    /// </summary>
     public class SweepHelper
     {
+        /// <summary>
+        /// the value of the piece
+        /// </summary>
         public Nullable<int> value { get; set; }
+        /// <summary>
+        /// is the helper a left/right | front/back
+        /// </summary>
         public bool isFront { get; set; }
+        /// <summary>
+        /// the position the helper is referencing
+        /// </summary>
         public Position reference { get; set; }
     }
     /// <summary>
@@ -138,6 +150,81 @@ namespace str_mgmr_backend.Models
                                     if(L-R == 0)
                                     {
                                         if(swPos.Count > 1)
+                                        {
+                                            _Output.Add(new VirtualPosition()
+                                            {
+                                                _Positions = swPos.Select(x => x._Id).ToList()
+                                            });
+                                        }
+                                        swPos.Clear();
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+                foreach (IGrouping<int, Position> gs in pos.GroupBy(x => x._Z).ToList())
+                {
+                    List<Position> sameZ = new List<Position>();
+                    foreach (Position p in gs)
+                    {
+                        if(p._L != null) sameZ.Add(p);
+                    }
+                    if (sameZ.Count > 1)
+                    {
+                        foreach (IGrouping<Nullable<int>, Position> gsr in sameZ.GroupBy(x => x._F).ToList())
+                        {
+                            List<Position> sameZAndF = new List<Position>();
+                            foreach (Position p in gsr) sameZAndF.Add(p);
+                            if (sameZAndF.Count > 1)
+                            {
+                                List<SweepHelper> sweeps = new List<SweepHelper>();
+                                foreach (Position p in sameZAndF)
+                                {
+                                    sweeps.Add(new SweepHelper()
+                                    {
+                                        isFront = false,
+                                        reference = p,
+                                        value = p._X
+                                    });
+                                    sweeps.Add(new SweepHelper()
+                                    {
+                                        isFront = true,
+                                        reference = p,
+                                        value = p._R
+                                    });
+                                }
+                                sweeps.Sort((a, b) =>
+                                {
+                                    if (a.value.HasValue && b.value.HasValue)
+                                    {
+                                        if (a.value > b.value) return 1;
+                                        else if (a.value < b.value) return -1;
+                                        else
+                                        {
+                                            if (a.isFront) return 1;
+                                            return -1;
+                                        }
+                                    }
+                                    if (a.value.HasValue && !b.value.HasValue) return -1;
+                                    else if (!a.value.HasValue && b.value.HasValue) return 1;
+                                    else
+                                    {
+                                        if (a.isFront) return 1;
+                                        return -1;
+                                    }
+                                });
+                                int L = 0;
+                                int R = 0;
+                                List<Position> swPos = new List<Position>();
+                                foreach (SweepHelper s in sweeps)
+                                {
+                                    if (!swPos.Contains(s.reference)) swPos.Add(s.reference);
+                                    if (s.isFront) R++;
+                                    else L++;
+                                    if (L - R == 0)
+                                    {
+                                        if (swPos.Count > 1)
                                         {
                                             _Output.Add(new VirtualPosition()
                                             {
@@ -335,18 +422,41 @@ namespace str_mgmr_backend.Models
             }
             return r.Value;
         }
+
+        /// <summary>
+        /// the method returns the position with a combined minimum calculation
+        /// </summary>
+        /// <returns></returns>
+        public Position MinCombined(OrderModel _Order)
+        {
+            Position min = Min(_Order);
+            Position min3 = Min3(_Order);
+            if (min._Z < min3._Z) return min;
+            return min3;
+        }
     }
 
     public class Room
     {
+        /// <summary>
+        /// the positions that are recently in the puffer
+        /// </summary>
         public List<Position> _Positions;
-
+        /// <summary>
+        /// all goods that are placed
+        /// </summary>
         public List<GoodModel> _Goods { get; }
         /// <summary>
         /// the list contains all steps of the sequence
         /// </summary>
         public List<SequenceStep> _Steps = new List<SequenceStep>();
+        /// <summary>
+        /// the total height of the container
+        /// </summary>
         public int height { get; set; }
+        /// <summary>
+        /// the total width of the container
+        /// </summary>
         public int width { get; set; }
         /// <summary>
         /// the method returns the length of the room
@@ -374,7 +484,7 @@ namespace str_mgmr_backend.Models
                 && (x._L == null || x._L >= _Order._Length)
                 && x._W >= _Order._Width 
                 && (_Order._Stack || x._Y == 0)
-                && (x._GroupRestrictionBy == null || x._GroupRestrictionBy <= _Order._Group)
+                && (x._GroupRestrictionBy == null || x._GroupRestrictionBy <= _Order._Group) // HIER UNBEDINGT RESTRICT < O.GROUP !!!
             ).ToList();
             if (_Order._Rotate)
             {
@@ -383,7 +493,7 @@ namespace str_mgmr_backend.Models
                     && (x._L == null || x._L >= _Order._Width) 
                     && x._W >= _Order._Length 
                     && (_Order._Stack || x._Y == 0)
-                    && (x._GroupRestrictionBy == null || x._GroupRestrictionBy <= _Order._Group)
+                    && (x._GroupRestrictionBy == null || x._GroupRestrictionBy <= _Order._Group) // HIER UNBEDINGT RESTRICT < O.GROUP !!!
                 ).ToList();
                 foreach(Position _Pos in _P._R)
                 {
@@ -395,7 +505,7 @@ namespace str_mgmr_backend.Models
                 return false;
             } else
             {
-                Position Pos = _P.Min3(_Order);
+                Position Pos = _P.MinCombined(_Order);
                 PositionResponse Resp;
                 if (includeSequenceInfo)
                 {
@@ -405,29 +515,14 @@ namespace str_mgmr_backend.Models
                     Resp = Pos.Put(_Order, start);
                 }
                 _Positions.Remove(Pos);
-                foreach(Position _Check in _Positions.Where(x => x._Z < Pos._Z && (x._GroupRestrictionBy == null || x._GroupRestrictionBy < _Order._Group)).ToList())
+                List<Position> _RecursiveGroupRestricted = new List<Position>();
+                foreach(Position _Check in _Positions.Where(x => x._Z < Resp.Putted._Z && (x._GroupRestrictionBy == null || x._GroupRestrictionBy < _Order._Group)).ToList())
                 {
-                    if (!(Resp.Putted._X > _Check._R || _Check._X > Resp.Putted._R || Resp.Putted._Y < _Check._Y || _Check._Y < Resp.Putted._Y))
+                    if (Resp.Putted.GetPosition().IsOverlapping(_Check))
                     {
-                        _Check._GroupRestrictionBy = _Order._Group;
+                        _Check._GroupRestrictionBy = Resp.Putted._Group;
+                        _RecursiveGroupRestricted.Add(_Check);
                     }
-                }
-                /*
-                PositionMergeResponse r = Position.MergePositions(_Positions.Concat(Resp.NewPos).ToList(), Resp.NewPos.Select(x => x._Id).ToList());
-                _Positions = r.Merged;
-                List<Position> _Changed = new List<Position>();
-                foreach (Guid id in r.Replaced)
-                {
-                    _Changed.Add(_Positions.Find(x => x._Id == id));
-                }
-                foreach (Position pos in Resp.NewPos)
-                {
-                    if (!r.Kicked.Contains(pos._Id)) _Changed.Add(pos);
-                }
-                */
-                foreach(VirtualPosition v in _P._V)
-                {
-                    Resp.Sequence.Add(v.ToString());
                 }
                 _Positions.AddRange(Resp.NewPos);
                 foreach (VirtualPosition vp in Possibilities.MergePositions(_Positions, _Order))
@@ -437,10 +532,23 @@ namespace str_mgmr_backend.Models
                     foreach (Guid id in vp._Positions)
                     {
                         Position p = _Positions.Find(x => x._Id == id);
-                        positionObjects.Add(p);
-                        if ((!gRB.HasValue && p._GroupRestrictionBy.HasValue) || (gRB.HasValue && p._GroupRestrictionBy.HasValue && p._GroupRestrictionBy.Value < gRB.Value)) gRB = p._GroupRestrictionBy;
-                        _Positions.Remove(p);
-                        if (Resp.NewPos.Contains(p)) Resp.NewPos.Remove(p);
+                        if(p != null)
+                        {
+                            positionObjects.Add(p);
+                            if (!gRB.HasValue)
+                            {
+                                if (p._GroupRestrictionBy.HasValue) gRB = p._GroupRestrictionBy;
+                            }
+                            else
+                            {
+                                if (p._GroupRestrictionBy.HasValue)
+                                {
+                                    if (p._GroupRestrictionBy.Value < gRB.Value) gRB = p._GroupRestrictionBy;
+                                }
+                            }
+                            _Positions.Remove(p);
+                            if (Resp.NewPos.Contains(p)) Resp.NewPos.Remove(p);
+                        }
                     }
                     int X = positionObjects.Min(x => x._X);
                     int Y = positionObjects.Min(x => x._Y);
@@ -464,7 +572,7 @@ namespace str_mgmr_backend.Models
                 _Goods.Add(Resp.Putted);
                 if (Resp.Sequence != null)
                 {
-                    _Steps.Add(new SequenceStep(sequnr, Resp.Sequence, Resp.NewPos));
+                    _Steps.Add(new SequenceStep(sequnr, Resp.Sequence, Resp.NewPos, _RecursiveGroupRestricted));
                 }
                 return true;
             }

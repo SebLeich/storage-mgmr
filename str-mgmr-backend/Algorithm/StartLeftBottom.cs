@@ -3,7 +3,6 @@ using storagemanager.backend.Models;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Threading.Tasks;
 
 namespace storage.mgr.backend.Algorithm
 {
@@ -19,6 +18,7 @@ namespace storage.mgr.backend.Algorithm
         public override SolutionModel calculate(DataInput _Input)
         {
             SolutionModel _Model = new SolutionModel();
+            _Model._ProcedureCall = DateTime.Now;
             ContainerModel _Container = new ContainerModel()
             {
                 _Height = _Input._ContainerHeight,
@@ -39,25 +39,27 @@ namespace storage.mgr.backend.Algorithm
                         double _Y = 0.0;
                         double _X = 0.0;
                         GoodModel _Last = _Container.GetLastElement();
-                        if (_Last != null && _Last._Desc == _C._Description && _Container.CanStackOn(_C, _Last))
+                        if(_Last != null)
                         {
-                            _Y = _Last._Y + _Last._Height;
-                            _Z = _Last._Z;
-                            _X = _Last._X;
-                        }
-                        else
-                        {
-                            if (_Last != null && _Last._Desc == _C._Description && _Container.CanStackNext(_C, _Last))
+                            if (_Last._Desc == _C._Description && _Container.CanStackOn(_C, _Last))
                             {
-                                _X = _Last._X + _Last._Width;
+                                _Y = _Last._Y + _Last._Height;
                                 _Z = _Last._Z;
+                                _X = _Last._X;
                             }
                             else
                             {
-                                _Z = _Container._Length;
+                                if (_Last._Desc == _C._Description && _Container.CanStackNext(_C, _Last))
+                                {
+                                    _X = _Last._X + _Last._Width;
+                                    _Z = _Last._Z;
+                                }
+                                else
+                                {
+                                    _Z = _Container._Length;
+                                }
                             }
                         }
-
                         GoodModel _Good = new GoodModel();
                         _Good._Desc = _C._Description;
                         _Good._Rotate = _C._Rotate;
@@ -73,6 +75,7 @@ namespace storage.mgr.backend.Algorithm
                     }
                 }
             }
+            _Model._ProcedureEnd = DateTime.Now;
             return _Model;
         }
     }

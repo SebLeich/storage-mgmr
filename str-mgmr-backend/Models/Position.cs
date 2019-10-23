@@ -99,7 +99,6 @@ namespace str_mgmr_backend.Models
         public Position() {
             _Id = Guid.NewGuid();
         }
-
         /// <summary>
         /// the method sets an order to the current instance and returns the good model with the updated coordinates and a set of new positions
         /// </summary>
@@ -567,34 +566,18 @@ namespace str_mgmr_backend.Models
             output.Merged = positions.Concat(newPositions).ToList();
             return output;
         }
-
-        public bool IsOverlapping(Position position)
-        {
-            foreach(Endpoint point in position.GetEndpoints())
-            {
-                if (this.IsOverlapping(point))
-                {
-                    return true;
-                }
-            }
-            return false;
-        }
-
         /// <summary>
-        /// the method checks if the given position (x, y, z) is overlapping the instances sphere
+        /// the method returns true, is partly/totally infront or behind the compared position
         /// </summary>
-        /// <param name="x">x</param>
-        /// <param name="y">y</param>
-        /// <param name="z">z</param>
+        /// <param name="comparison"></param>
         /// <returns></returns>
-        public bool IsOverlapping(Endpoint point)
+        public bool IsOverlapping(Position comparison)
         {
-            if(_X < point._X && (_X + _W) > point._X && _Y < point._Y && (_Y + _H) > point._Y && _Z < point._Z && (_L == null || (_Z + _L.GetValueOrDefault()) > point._Z))
-            {
-                return true;
-            }
-            return false;
+            if ((_T <= comparison._Y) || (_Y >= comparison._T)) return false;
+            if ((_R <= comparison._X) || (_X >= comparison._R)) return false;
+            return true;
         }
+
         /// <summary>
         /// the method substracts a given position from the current instance
         /// </summary>

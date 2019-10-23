@@ -20,6 +20,10 @@ namespace storage.mgr.backend.Algorithm
 
         abstract public SolutionModel calculate(DataInput _Input);
 
+        public DateTime _ProcedureCall;
+
+        public DateTime _ProcedureEnd;
+
         /// <summary>
         /// the method analysis the datasets to extract all groups and set a random color to them
         /// </summary>

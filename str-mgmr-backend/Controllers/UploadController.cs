@@ -3,6 +3,8 @@ using System.Web.Http;
 using System.Web.Http.Cors;
 using storagemanager.backend.Models;
 using storagemanager.backend.Repositories;
+using str_mgmr_backend.Core;
+using wista.backend.Controllers.Socket;
 
 namespace storagemanager.backend.Controllers
 {
@@ -16,21 +18,28 @@ namespace storagemanager.backend.Controllers
         /// <summary>
         /// the repository contains the methods to calculate the solutionss
         /// </summary>
-        private CalculationRepository _Repo;
+        private CalculationRepository repo;
 
         /// <summary>
         /// the constructor creates a new instance of the controller
         /// </summary>
         public UploadController()
         {
-            _Repo = new CalculationRepository();
+            repo = new CalculationRepository();
         }
 
+        /// <summary>
+        /// the endpoint allows the clients to upload a given data sheet
+        /// </summary>
+        /// <param name="_Input">data input (from csv)</param>
+        /// <returns>solution</returns>
         [HttpPost]
         [EnableCors(origins: "*", headers: "*", methods: "*")]
-        public IHttpActionResult UploadUserInput([FromBody] DataInput _Input)
+        public IHttpActionResult UploadUserInput([FromBody] DataInput input)
         {
-            return Ok(_Repo.StartCalculation(_Input));
+            Guid responseId = Hubproxy._Instance.RegisterTask();
+            repo.StartCalculation(input, responseId);
+            return Ok();
         }
     }
 }

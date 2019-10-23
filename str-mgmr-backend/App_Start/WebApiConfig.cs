@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Web.Http;
+using System.Web.Http.Cors;
 
 namespace str_mgmr_backend
 {
@@ -9,9 +10,6 @@ namespace str_mgmr_backend
     {
         public static void Register(HttpConfiguration config)
         {
-            // Web-API-Konfiguration und -Dienste
-
-            // Web-API-Routen
             config.MapHttpAttributeRoutes();
 
             config.EnableCors();

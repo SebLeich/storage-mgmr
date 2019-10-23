@@ -34,6 +34,11 @@ namespace storage.mgr.backend.Models
         /// the list contains all done steps
         /// </summary>
         public List<SequenceStep> _Steps { get; set; }
+
+        public DateTime _ProcedureCall;
+
+        public DateTime _ProcedureEnd;
+
         /// <summary>
         /// the constructor creates a new solution model
         /// </summary>

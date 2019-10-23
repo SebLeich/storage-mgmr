@@ -51,18 +51,8 @@ namespace storage.mgr.backend.Models
         /// <returns></returns>
         public bool CanStackNext(OrderModel _New, GoodModel _Last)
         {
-            if (_Last == null)
-            {
-                return false;
-            }
-            if (!_New._Stack)
-            {
-                return false;
-            }
-            if (!_Last._Stack)
-            {
-                return false;
-            }
+            if (_Last == null) return false;
+            if (_New == null) return false;
             if ((_Last._X + _Last._Width + _New._Width) <= _Width)
             {
                 return true;

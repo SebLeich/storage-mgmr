@@ -1,4 +1,5 @@
-﻿using System;
+﻿using str_mgmr_backend.Models;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -99,6 +100,21 @@ namespace storage.mgr.backend.Models
                     return _Z + _Length;
                 }
             }
+        }
+        /// <summary>
+        /// the method returns the position of the good
+        /// </summary>
+        /// <returns></returns>
+        public Position GetPosition()
+        {
+            return new Position()
+            {
+                _X = (int)_X,
+                _Y = (int)_Y,
+                _W = (int)_Length,
+                _H = (int)_Height,
+                IsRotated = _IsRotated
+            };
         }
     }
 }
